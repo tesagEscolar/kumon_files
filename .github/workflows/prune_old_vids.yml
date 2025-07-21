@@ -21,7 +21,7 @@ jobs:
 
       - name: Find & remove video files older than 1 hour
         run: |
-          find videos/ -type f -mmin +60 -print0 | xargs -0 git rm || true
+          find videos/ -type f -mmin +30 -print0 | xargs -0 git rm || true
 
       - name: Commit & push changes
         if: github.event_name == 'workflow_dispatch' && inputs.dryRun == 'false'
