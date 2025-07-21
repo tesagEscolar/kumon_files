@@ -1,5 +1,6 @@
 name: "Prune old videos"
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'  # Every day at midnight UTC
 
@@ -17,7 +18,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           dir: 'videos'
-          days_old: '1'
+          days_old: '0'
           # optional:
           # base_branch: 'main'
           # pr_title: 'Delete videos older than 1 day'
