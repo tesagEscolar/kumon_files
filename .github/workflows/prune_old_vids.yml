@@ -22,10 +22,15 @@ jobs:
       - name: Restore file timestamps
         uses: chetan/git-restore-mtime-action@v2
 
-      - name: Find & remove video files older than 1 hour
+      - name: Delete videos older than 30 minutes
         run: |
-          find videos/ -type f -mmin +30 -print0 | xargs -0 git rm --ignore-unmatch
-
+          git ls-files videos/ | while read f; do
+            ts=$(git log -1 --format="%ct" -- "$f")
+            if [ $(( $(date +%s) - ts )) -gt $((30 * 60)) ]; then
+              git rm "$f"
+              echo "Removed $f (last commit was at $(date -d "@$ts"))"
+            fi
+          done
       - name: Commit & push changes
         if: github.event_name == 'workflow_dispatch' && inputs.dryRun == 'false'
         run: |
