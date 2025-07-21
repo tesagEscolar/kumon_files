@@ -1,0 +1,33 @@
+name: "Prune old videos"
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Every day at midnight UTC
+
+jobs:
+  prune_videos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Delete old videos
+        uses: daniL16/action-clean-old-files@latest
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          dir: 'videos'
+          days_old: '1'
+          # optional:
+          # base_branch: 'main'
+          # pr_title: 'Delete videos older than 1 day'
+
+      # If directly committing:
+      - name: Commit & Push changes
+        if: steps.delete_old_videos.outputs.deleted == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add videos
+          git commit -m "Remove stale video files older than 1 day"
+          git push
